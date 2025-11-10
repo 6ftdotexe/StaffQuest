@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "StaffQuest",
+    "slug": "staffquest-mobile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0b0d10"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0b0d10"
+      },
+      "package": "com.staffquest.app"
+    },
+    "plugins": [
+      "expo-auth-session"
+    ]
+  }
+}

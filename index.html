@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StaffQuest – Gamified Training for Restaurant Teams</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="sq-header">
+    <div class="sq-header-left">
+      <div class="sq-logo">SQ</div>
+      <div>
+        <h1>StaffQuest</h1>
+        <p class="sq-subtitle">Gamified Training & Motivation for Restaurant Employees</p>
+      </div>
+    </div>
+    <div class="sq-header-right">
+      <div class="sq-header-tabs">
+        <button id="employeeViewBtn" class="sq-tab-btn sq-tab-btn-active">Employee View</button>
+        <button id="managerViewBtn" class="sq-tab-btn">Manager View</button>
+      </div>
+      <div class="sq-user-info">
+        <span id="userStatus">Not signed in</span>
+        <button id="logoutBtn" class="sq-btn sq-btn-ghost sq-btn-sm">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="sq-main">
+
+    <!-- LOGIN-ish VIEW -->
+    <section id="loginView" class="sq-view">
+      <div class="sq-layout-login">
+        <div class="sq-card">
+          <h2>Sign in to StaffQuest</h2>
+          <p class="sq-muted">
+            Choose a role to explore the prototype. This is a simple, local-only “login-ish” screen.
+          </p>
+
+          <label class="sq-label">
+            I am a...
+            <select id="loginRoleSelect" class="sq-select">
+              <option value="employee">Employee</option>
+              <option value="manager">Manager</option>
+            </select>
+          </label>
+
+          <div id="loginEmployeeBlock">
+            <label class="sq-label">
+              Select your employee profile
+              <select id="loginEmployeeSelect" class="sq-select"></select>
+            </label>
+            <p class="sq-muted sq-login-hint">
+              Profiles come from the employee list in the app. Managers can add more later.
+            </p>
+          </div>
+
+          <div id="managerPinBlock" style="display:none; margin-top:8px;">
+            <label class="sq-label">
+              Manager PIN
+              <input type="password" id="managerPinInput" class="sq-input" placeholder="Enter manager PIN">
+            </label>
+            <p class="sq-muted sq-login-hint">
+              Demo PIN: <code>1234</code> (local only, not real security).
+            </p>
+          </div>
+
+          <div class="sq-row-right" style="margin-top: 10px;">
+            <button id="loginContinueBtn" class="sq-btn sq-btn-primary">Continue</button>
+          </div>
+
+          <p class="sq-muted sq-login-footer">
+            No real authentication here – just role selection for demo and UX flow.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EMPLOYEE VIEW -->
+    <section id="employeeView" class="sq-view sq-view-hidden">
+      <div class="sq-layout">
+        <div class="sq-card">
+          <h2>Choose Employee</h2>
+          <label for="employeeSelect" class="sq-label">Active Employee</label>
+          <div class="sq-row">
+            <select id="employeeSelect" class="sq-select"></select>
+            <button id="newEmployeeBtn" class="sq-btn sq-btn-secondary">+ New Employee</button>
+          </div>
+
+          <form id="newEmployeeForm" class="sq-form sq-form-hidden">
+            <h3>Create New Employee</h3>
+            <label class="sq-label">
+              Name
+              <input type="text" id="employeeNameInput" class="sq-input" required>
+            </label>
+            <label class="sq-label">
+              Role
+              <input type="text" id="employeeRoleInput" class="sq-input" placeholder="e.g., Cashier, Cook">
+            </label>
+            <div class="sq-row-right">
+              <button type="button" id="cancelNewEmployee" class="sq-btn sq-btn-ghost">Cancel</button>
+              <button type="submit" class="sq-btn sq-btn-primary">Create</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="sq-card" id="employeeStatsCard">
+          <h2>Player Stats</h2>
+          <p id="employeeNameDisplay" class="sq-title-lg"></p>
+          <p id="employeeRoleDisplay" class="sq-muted"></p>
+
+          <div class="sq-stat-row">
+            <div>
+              <p class="sq-stat-label">Level</p>
+              <p id="employeeLevel" class="sq-stat-value">–</p>
+            </div>
+            <div>
+              <p class="sq-stat-label">XP</p>
+              <p id="employeeXP" class="sq-stat-value">–</p>
+            </div>
+            <div>
+              <p class="sq-stat-label">Badges</p>
+              <p id="employeeBadges" class="sq-stat-value">–</p>
+            </div>
+          </div>
+
+          <div class="sq-progress-wrapper">
+            <div class="sq-progress-header">
+              <span>Progress to Next Level</span>
+              <span id="progressLabel">0 / 100 XP</span>
+            </div>
+            <div class="sq-progress-bar">
+              <div id="progressFill" class="sq-progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="sq-achievements">
+            <p class="sq-stat-label">Achievements</p>
+            <ul id="employeeAchievementsList" class="sq-achievements-list">
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="sq-card">
+        <div class="sq-card-header">
+          <h2>Quests</h2>
+          <p class="sq-muted">Complete quests based on real restaurant tasks to earn XP and badges.</p>
+        </div>
+        <div class="sq-filter-row">
+          <label class="sq-label-inline">
+            Filter by category:
+            <select id="questFilterSelect" class="sq-select sq-select-sm">
+              <option value="all">All</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="questList" class="sq-quest-list">
+        </div>
+      </div>
+    </section>
+
+    <!-- MANAGER VIEW -->
+    <section id="managerView" class="sq-view sq-view-hidden">
+      <div class="sq-layout">
+        <div class="sq-card">
+          <h2>Team Overview</h2>
+          <p class="sq-muted">See how your team is progressing through StaffQuest.</p>
+          <div class="sq-table-wrapper">
+            <table class="sq-table">
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Role</th>
+                  <th>Level</th>
+                  <th>XP</th>
+                  <th>Quests Completed</th>
+                </tr>
+              </thead>
+              <tbody id="employeeTableBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="sq-card">
+          <h2>Create Custom Quest</h2>
+          <p class="sq-muted">Add location-specific quests that match your restaurant’s standards.</p>
+
+          <form id="newQuestForm" class="sq-form">
+            <label class="sq-label">
+              Quest Name
+              <input type="text" id="questNameInput" class="sq-input" placeholder="Example: Dinner Rush Accuracy" required>
+            </label>
+
+            <label class="sq-label">
+              Category
+              <input type="text" id="questCategoryInput" class="sq-input" placeholder="Service, Kitchen, Cleanliness...">
+            </label>
+
+            <label class="sq-label">
+              XP Reward
+              <input type="number" id="questXPInput" class="sq-input" min="10" step="10" value="50" required>
+            </label>
+
+            <label class="sq-checkbox-label">
+              <input type="checkbox" id="questRepeatableInput" checked>
+              Quest is repeatable
+            </label>
+
+            <label class="sq-label">
+              Description
+              <textarea id="questDescriptionInput" class="sq-textarea" rows="3"
+                placeholder="Describe what the employee must do to complete this quest."></textarea>
+            </label>
+
+            <div class="sq-row-right">
+              <button type="reset" class="sq-btn sq-btn-ghost">Clear</button>
+              <button type="submit" class="sq-btn sq-btn-primary">Save Quest</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="sq-card sq-note-card">
+        <h3>Manager Notes</h3>
+        <p class="sq-muted">
+          This StaffQuest prototype stores data in your browser using <code>localStorage</code>.
+          Use it to experiment with gamified training flows, XP values, and quest design for your
+          INF 651 project or real restaurant environment.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Achievement toast -->
+  <div id="achievementToast" class="sq-toast">
+    <div class="sq-toast-title">New achievement unlocked!</div>
+    <div id="achievementToastBody" class="sq-toast-body"></div>
+  </div>
+
+  <footer class="sq-footer">
+    <span>StaffQuest Prototype &middot; INF 651 &middot; Lance Page</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
