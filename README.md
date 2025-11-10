@@ -1,32 +1,33 @@
-# 🍽️ StaffQuest
-**A Gamified Training & Motivation System for Restaurant Employees**
+# StaffQuest
 
-StaffQuest is a prototype web application designed to reimagine restaurant employee training through **gamification**.  
-transforms onboarding and skill-building into interactive “quests” and “achievements.”
+StaffQuest is a gamified training and motivation web app for restaurant employees. It turns everyday tasks into “quests” with XP, levels, streaks, and lightweight manager tools – built as a front-end prototype using HTML, CSS, and JavaScript (no backend).
 
----
+## Features
 
-## 🚀 Features
-- 🎮 **Gamified Training:** Employees complete “quests” to earn XP, badges, and achievements.  
-- 👥 **Employee & Manager Views:** Separate dashboards for staff and management.  
-- 🧾 **Custom Quests:** Managers can add their own training tasks.  
-- 🏆 **Achievements & Levels:** Track progress visually with XP bars and badges.  
-- 💾 **Local Data Storage:** Runs entirely in your browser using `localStorage`.  
-- 🔒 **Demo Login:** Choose *Employee* or *Manager* role (PIN: `1234`).
+- 🎮 **Gamified training for employees**  
+  Employees choose their profile, complete quests (daily, weekly, core), earn XP, level up, and unlock achievements.
 
----
+- 📊 **Live progress, XP, and streaks**  
+  Each employee has a profile with total XP, level, quests completed, **XP earned today**, and **login streak** calculated from quest history.
 
-## 🧰 Tech Stack
-- HTML5  
-- CSS3 (Custom UI theme with Tailwind-inspired design)  
-- JavaScript (Vanilla, no frameworks)  
-- Browser `localStorage` for persistence  
+- 😄 **Shift mood check-ins**  
+  Quick emoji-based mood buttons let employees log how their shift felt today (stored per employee in `localStorage`).
 
----
+- 🧩 **Quest system with difficulty and filters**  
+  Quests have category, type (daily/weekly/core), XP value, and auto-labeled difficulty (Easy/Normal/Hard), plus filters and a “Random Quest” button.
 
-## 🖥️ Running Locally
+- 🧑‍💼 **Manager dashboard with team insights**  
+  Manager view (protected by a demo PIN `1234`) shows a team table, **team XP summary**, **today’s shift summary** (quests & XP today + most active employee), top performers, and a quest editor.
 
-1. **Download or clone this repo:**
+## Tech Stack
+
+- HTML, CSS, Vanilla JavaScript
+- No frameworks, no backend
+- Uses `localStorage` for demo data persistence in the browser
+
+## Getting Started
+
+1. Clone or download the repo.
+2. Open `index.html` directly in your browser **or** run a simple server, for example:
    ```bash
-   git clone https://github.com/<your-username>/staffquest.git
-   cd staffquest
+   python -m http.server
