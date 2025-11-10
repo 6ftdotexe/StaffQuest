@@ -1,185 +1,105 @@
-// StaffQuest UI utilities
+// ui.js – DOM rendering & lightweight helpers
 
-// Views
-const sqViews = {
-  login: document.getElementById("loginView"),
-  employee: document.getElementById("employeeView"),
-  manager: document.getElementById("managerView")
-};
-
-// DOM refs
 const sqDom = {
-  employeeViewBtn: document.getElementById("employeeViewBtn"),
-  managerViewBtn: document.getElementById("managerViewBtn"),
-  userStatus: document.getElementById("userStatus"),
+  // General
+  loginScreen: document.getElementById("loginScreen"),
+  employeeScreen: document.getElementById("employeeScreen"),
+  managerScreen: document.getElementById("managerScreen"),
   logoutBtn: document.getElementById("logoutBtn"),
-  helpBtn: document.getElementById("helpBtn"),
+  toastContainer: document.getElementById("toastContainer"),
 
+  // Login
   loginRoleSelect: document.getElementById("loginRoleSelect"),
   loginEmployeeBlock: document.getElementById("loginEmployeeBlock"),
   loginEmployeeSelect: document.getElementById("loginEmployeeSelect"),
+  employeePinBlock: document.getElementById("employeePinBlock"),
+  employeePinInput: document.getElementById("employeePinInput"),
   managerPinBlock: document.getElementById("managerPinBlock"),
   managerPinInput: document.getElementById("managerPinInput"),
   loginContinueBtn: document.getElementById("loginContinueBtn"),
 
-  employeeSelect: document.getElementById("employeeSelect"),
-  employeeManageBtn: document.getElementById("employeeManageBtn"),
-  employeeProfileEmpty: document.getElementById("employeeProfileEmpty"),
-  employeeProfilePanel: document.getElementById("employeeProfilePanel"),
-  employeeNameDisplay: document.getElementById("employeeNameDisplay"),
-  employeeRoleDisplay: document.getElementById("employeeRoleDisplay"),
-  employeeLevelLabel: document.getElementById("employeeLevelLabel"),
-  employeeXP: document.getElementById("employeeXP"),
-  employeeNextLevel: document.getElementById("employeeNextLevel"),
-  employeeQuestCount: document.getElementById("employeeQuestCount"),
-  progressFill: document.getElementById("progressFill"),
-  progressLabel: document.getElementById("progressLabel"),
-  employeeAchievementsList: document.getElementById("employeeAchievementsList"),
+  // Employee view
+  empName: document.getElementById("empName"),
+  empRole: document.getElementById("empRole"),
+  empLevel: document.getElementById("empLevel"),
+  empTitle: document.getElementById("empTitle"),
+  empXP: document.getElementById("empXP"),
+  empQuestsDone: document.getElementById("empQuestsDone"),
+  empXPProgressFill: document.getElementById("empXPProgressFill"),
+  empAchievementsList: document.getElementById("empAchievementsList"),
+
+  empXPToday: document.getElementById("empXPToday"),
+  empStreakCurrent: document.getElementById("empStreakCurrent"),
+  empStreakBest: document.getElementById("empStreakBest"),
   viewHistoryBtn: document.getElementById("viewHistoryBtn"),
-  resetEmployeeBtn: document.getElementById("resetEmployeeBtn"),
 
-  employeeXPToday: document.getElementById("employeeXPToday"),
-  employeeStreakCurrent: document.getElementById("employeeStreakCurrent"),
-  employeeStreakBest: document.getElementById("employeeStreakBest"),
+  moodButtons: document.querySelectorAll(".sq-mood-btn"),
+  empMoodText: document.getElementById("empMoodText"),
 
-  moodButtons: document.getElementById("moodButtons"),
-  moodStatus: document.getElementById("moodStatus"),
+  teamQuestsEmployee: document.getElementById("teamQuestsEmployee"),
 
-  questTypeFilters: document.getElementById("questTypeFilters"),
-  questCategoryFilter: document.getElementById("questCategoryFilter"),
   questList: document.getElementById("questList"),
   randomQuestBtn: document.getElementById("randomQuestBtn"),
+  filterTypeAll: document.getElementById("filterTypeAll"),
+  filterTypeDaily: document.getElementById("filterTypeDaily"),
+  filterTypeWeekly: document.getElementById("filterTypeWeekly"),
+  filterTypeCore: document.getElementById("filterTypeCore"),
+  filterCategorySelect: document.getElementById("filterCategorySelect"),
 
-  employeeSearchInput: document.getElementById("employeeSearchInput"),
-  addEmployeeBtn: document.getElementById("addEmployeeBtn"),
-  employeeListEmpty: document.getElementById("employeeListEmpty"),
-  employeeTableWrapper: document.getElementById("employeeTableWrapper"),
+  // History modal
+  historyModal: document.getElementById("historyModal"),
+  historyCloseBtn: document.getElementById("historyCloseBtn"),
+  historyList: document.getElementById("historyList"),
+
+  // Manager view
   employeeTableBody: document.getElementById("employeeTableBody"),
-  resetAllDataBtn: document.getElementById("resetAllDataBtn"),
+  addEmployeeBtn: document.getElementById("addEmployeeBtn"),
 
   teamTotalXP: document.getElementById("teamTotalXP"),
   teamAvgLevel: document.getElementById("teamAvgLevel"),
   teamTotalQuests: document.getElementById("teamTotalQuests"),
-
   teamQuestsToday: document.getElementById("teamQuestsToday"),
   teamXPToday: document.getElementById("teamXPToday"),
   teamMostActiveToday: document.getElementById("teamMostActiveToday"),
 
-  topPerformersList: document.getElementById("topPerformersList"),
+  teamQuestsManager: document.getElementById("teamQuestsManager"),
 
-  questForm: document.getElementById("questForm"),
-  questIdInput: document.getElementById("questIdInput"),
-  questNameInput: document.getElementById("questNameInput"),
-  questCategoryInput: document.getElementById("questCategoryInput"),
-  questTypeInput: document.getElementById("questTypeInput"),
-  questXPInput: document.getElementById("questXPInput"),
-  questRepeatableInput: document.getElementById("questRepeatableInput"),
-  questDescriptionInput: document.getElementById("questDescriptionInput"),
-  questCancelEditBtn: document.getElementById("questCancelEditBtn"),
+  topPerformersList: document.getElementById("topPerformersList"),
+  activityList: document.getElementById("activityList"),
+
+  verificationQueue: document.getElementById("verificationQueue"),
+
+  addQuestBtn: document.getElementById("addQuestBtn"),
   questManagerList: document.getElementById("questManagerList"),
 
-  historyModal: document.getElementById("historyModal"),
-  historyModalClose: document.getElementById("historyModalClose"),
-  historyModalBody: document.getElementById("historyModalBody"),
-
-  helpModal: document.getElementById("helpModal"),
-  helpModalClose: document.getElementById("helpModalClose"),
-
-  toast: document.getElementById("toast"),
-  toastTitle: document.getElementById("toastTitle"),
-  toastBody: document.getElementById("toastBody")
+  populateDemoDataBtn: document.getElementById("populateDemoDataBtn"),
+  clearDemoDataBtn: document.getElementById("clearDemoDataBtn")
 };
 
-let sqToastTimeoutId = null;
+/* ---------- Toasts ---------- */
 
-// -------- Views --------
-
-function sqShowView(which) {
-  Object.keys(sqViews).forEach((k) => sqViews[k].classList.add("sq-hidden"));
-  if (sqViews[which]) {
-    sqViews[which].classList.remove("sq-hidden");
-  }
+function sqShowToast(title, message) {
+  if (!sqDom.toastContainer) return;
+  const el = document.createElement("div");
+  el.className = "sq-toast";
+  el.innerHTML = `<strong>${title}</strong><br /><span>${message}</span>`;
+  sqDom.toastContainer.appendChild(el);
+  setTimeout(() => {
+    if (el.parentNode) el.parentNode.removeChild(el);
+  }, 3500);
 }
 
-function sqSetTabActive(tab) {
-  if (!sqDom.employeeViewBtn || !sqDom.managerViewBtn) return;
-  if (tab === "employee") {
-    sqDom.employeeViewBtn.classList.add("sq-tab-active");
-    sqDom.managerViewBtn.classList.remove("sq-tab-active");
-  } else {
-    sqDom.managerViewBtn.classList.add("sq-tab-active");
-    sqDom.employeeViewBtn.classList.remove("sq-tab-active");
-  }
-}
-
-function sqUpdateUserStatus(session) {
-  if (!session || !session.role) {
-    sqDom.userStatus.textContent = "Not signed in";
-    sqDom.logoutBtn.classList.add("sq-hidden");
-    return;
-  }
-  if (session.role === "manager") {
-    sqDom.userStatus.textContent = "Logged in as Manager";
-  } else {
-    const emp = sqGetEmployeeById(session.employeeId);
-    sqDom.userStatus.textContent = emp
-      ? `Logged in as ${emp.name} (Employee)`
-      : "Logged in as Employee";
-  }
-  sqDom.logoutBtn.classList.remove("sq-hidden");
-}
-
-// -------- Toasts --------
-
-function sqShowToast(title, body) {
-  if (!sqDom.toast) return;
-  sqDom.toastTitle.textContent = title || "";
-  sqDom.toastBody.textContent = body || "";
-  sqDom.toast.classList.add("sq-toast-visible");
-  sqDom.toast.classList.remove("sq-hidden");
-  if (sqToastTimeoutId) clearTimeout(sqToastTimeoutId);
-  sqToastTimeoutId = setTimeout(() => {
-    sqDom.toast.classList.remove("sq-toast-visible");
-    sqToastTimeoutId = null;
-  }, 3200);
-}
-
-// -------- Mood storage --------
-
-function sqGetMoodMap() {
-  try {
-    const raw = localStorage.getItem("sq_mood_log");
-    return raw ? JSON.parse(raw) : {};
-  } catch (e) {
-    return {};
-  }
-}
-
-function sqSaveMoodMap(map) {
-  localStorage.setItem("sq_mood_log", JSON.stringify(map || {}));
-}
-
-// -------- Login view --------
+/* ---------- Login UI ---------- */
 
 function sqRenderLoginEmployeeOptions() {
-  const select = sqDom.loginEmployeeSelect;
-  if (!select) return;
+  if (!sqDom.loginEmployeeSelect) return;
   const employees = sqGetEmployees();
-  select.innerHTML = "";
-  if (!employees.length) {
-    const opt = document.createElement("option");
-    opt.value = "";
-    opt.textContent = "No employees yet";
-    select.appendChild(opt);
-    select.disabled = true;
-    return;
-  }
-  select.disabled = false;
+  sqDom.loginEmployeeSelect.innerHTML = "";
   employees.forEach((emp) => {
     const opt = document.createElement("option");
     opt.value = emp.id;
-    opt.textContent = `${emp.name} (${emp.role || "No role"})`;
-    select.appendChild(opt);
+    opt.textContent = `${emp.name} – ${emp.role}`;
+    sqDom.loginEmployeeSelect.appendChild(opt);
   });
 }
 
@@ -187,515 +107,658 @@ function sqRenderLoginRoleUI() {
   const role = sqDom.loginRoleSelect.value;
   if (role === "employee") {
     sqDom.loginEmployeeBlock.classList.remove("sq-hidden");
+    if (sqDom.employeePinBlock)
+      sqDom.employeePinBlock.classList.remove("sq-hidden");
     sqDom.managerPinBlock.classList.add("sq-hidden");
   } else {
     sqDom.loginEmployeeBlock.classList.add("sq-hidden");
+    if (sqDom.employeePinBlock)
+      sqDom.employeePinBlock.classList.add("sq-hidden");
     sqDom.managerPinBlock.classList.remove("sq-hidden");
     sqDom.managerPinInput.focus();
   }
 }
 
-// -------- Employee profile & streaks --------
-
-function sqComputeStreakStats(emp) {
-  const history = emp.questHistory || [];
-  const today = new Date();
-  const todayKey = today.toDateString();
-
-  let xpToday = 0;
-  const daySet = new Set();
-
-  history.forEach((h) => {
-    const d = new Date(h.completedAt);
-    if (isNaN(d.getTime())) return;
-    const key = d.toDateString();
-    daySet.add(key);
-    if (key === todayKey) {
-      const quest = sqGetQuestById(h.questId);
-      const xp = h.xpEarned || (quest ? quest.xp || 0 : 0);
-      xpToday += xp;
-    }
-  });
-
-  if (!daySet.size) {
-    return { xpToday, currentStreak: 0, bestStreak: 0 };
-  }
-
-  const sortedTimes = Array.from(daySet)
-    .map((k) => new Date(k).getTime())
-    .sort((a, b) => a - b);
-
-  let best = 1;
-  let current = 1;
-  for (let i = 1; i < sortedTimes.length; i++) {
-    const diffDays =
-      (sortedTimes[i] - sortedTimes[i - 1]) / (1000 * 60 * 60 * 24);
-    if (Math.round(diffDays) === 1) {
-      current += 1;
-    } else {
-      current = 1;
-    }
-    if (current > best) best = current;
-  }
-
-  let curStreak = 0;
-  let cursor = new Date(todayKey);
-  while (daySet.has(cursor.toDateString())) {
-    curStreak += 1;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-
-  return {
-    xpToday,
-    currentStreak: curStreak,
-    bestStreak: best
-  };
-}
-
-function sqRenderEmployeeSelect() {
-  const select = sqDom.employeeSelect;
-  const employees = sqGetEmployees();
-  select.innerHTML = "";
-  if (!employees.length) {
-    const opt = document.createElement("option");
-    opt.value = "";
-    opt.textContent = "No employees yet";
-    select.appendChild(opt);
-    sqDom.employeeProfileEmpty.classList.remove("sq-hidden");
-    sqDom.employeeProfilePanel.classList.add("sq-hidden");
-    return;
-  }
-  employees.forEach((emp) => {
-    const opt = document.createElement("option");
-    opt.value = emp.id;
-    opt.textContent = `${emp.name} (${emp.role || "No role"})`;
-    select.appendChild(opt);
-  });
-  sqDom.employeeProfileEmpty.classList.add("sq-hidden");
-  sqDom.employeeProfilePanel.classList.remove("sq-hidden");
-}
+/* ---------- Employee render ---------- */
 
 function sqRenderEmployeeProfile(empId, opts = {}) {
   const emp = sqGetEmployeeById(empId);
-  if (!emp) {
-    sqDom.employeeProfileEmpty.classList.remove("sq-hidden");
-    sqDom.employeeProfilePanel.classList.add("sq-hidden");
-    return;
-  }
-  sqDom.employeeProfileEmpty.classList.add("sq-hidden");
-  sqDom.employeeProfilePanel.classList.remove("sq-hidden");
-
-  const xp = emp.xp || 0;
-  const { level, current, needed, percent } = sqGetLevelProgress(xp);
-  const questCount = sqGetQuestCountsForEmployee(emp);
-
-  sqDom.employeeNameDisplay.textContent = emp.name;
-  sqDom.employeeRoleDisplay.textContent = emp.role || "Role not set";
-  sqDom.employeeLevelLabel.textContent = `Lv ${level}`;
-  sqDom.employeeXP.textContent = xp;
-  sqDom.employeeNextLevel.textContent = `${needed} XP`;
-  sqDom.employeeQuestCount.textContent = questCount;
-  sqDom.progressLabel.textContent = `${current} / ${needed} XP`;
-  sqDom.progressFill.style.width = percent + "%";
-
-  if (opts.levelUp) {
-    sqDom.progressFill.classList.add("sq-level-up");
-    setTimeout(() => sqDom.progressFill.classList.remove("sq-level-up"), 700);
-  }
+  if (!emp) return;
 
   const achievements = sqGetAchievements(emp);
-  sqDom.employeeAchievementsList.innerHTML = "";
-  if (!achievements.length) {
-    const li = document.createElement("li");
-    li.textContent = "No achievements yet – complete quests to unlock.";
-    sqDom.employeeAchievementsList.appendChild(li);
-  } else {
-    achievements.forEach((a) => {
+  const level = sqGetLevel(emp.xp || 0);
+
+  if (sqDom.empName) sqDom.empName.textContent = emp.name;
+  if (sqDom.empRole) sqDom.empRole.textContent = emp.role || "Team Member";
+  if (sqDom.empLevel) sqDom.empLevel.textContent = String(level);
+  if (sqDom.empXP) sqDom.empXP.textContent = `${emp.xp || 0} XP`;
+
+  const questCount = sqGetQuestCountsForEmployee(emp);
+  if (sqDom.empQuestsDone)
+    sqDom.empQuestsDone.textContent = `${questCount} quests done`;
+
+  // Simple "title" based on level
+  let title = "Rookie";
+  if (level >= 4 && level <= 6) title = "Regular";
+  else if (level >= 7 && level <= 9) title = "Pro";
+  else if (level >= 10) title = "Legend";
+  if (sqDom.empTitle) sqDom.empTitle.textContent = title;
+
+  // Progress to next level (100 XP chunks)
+  const xpInLevel = (emp.xp || 0) % 100;
+  const pct = Math.max(0, Math.min(100, (xpInLevel / 100) * 100));
+  if (sqDom.empXPProgressFill) {
+    sqDom.empXPProgressFill.style.width = `${pct}%`;
+  }
+
+  if (sqDom.empAchievementsList) {
+    sqDom.empAchievementsList.innerHTML = "";
+    if (!achievements.length) {
       const li = document.createElement("li");
-      li.innerHTML = `<span class="sq-achievement-name">${a.name}</span> – ${a.description}`;
-      sqDom.employeeAchievementsList.appendChild(li);
+      li.className = "sq-pill sq-pill-soft";
+      li.textContent = "No achievements yet";
+      sqDom.empAchievementsList.appendChild(li);
+    } else {
+      achievements.forEach((a) => {
+        const li = document.createElement("li");
+        li.className = "sq-pill sq-pill-soft";
+        li.textContent = a.name;
+        sqDom.empAchievementsList.appendChild(li);
+      });
+    }
+  }
+
+  // Level up feedback
+  if (opts.levelUp) {
+    sqShowToast("Level up!", `${emp.name} reached level ${level}!`);
+  }
+
+  // Streak + mood
+  sqRenderEmployeeTodayAndStreak(empId);
+  sqRenderEmployeeMood(empId);
+}
+
+function sqRenderEmployeeTodayAndStreak(empId) {
+  const emp = sqGetEmployeeById(empId);
+  if (!emp) return;
+  const info = sqGetStreakInfo(emp);
+  if (sqDom.empXPToday)
+    sqDom.empXPToday.textContent = String(info.xpToday || 0);
+  if (sqDom.empStreakCurrent)
+    sqDom.empStreakCurrent.textContent = String(info.current || 0);
+  if (sqDom.empStreakBest)
+    sqDom.empStreakBest.textContent = String(info.best || 0);
+}
+
+function sqRenderEmployeeMood(empId) {
+  const emp = sqGetEmployeeById(empId);
+  if (!emp) return;
+  const mood = sqGetMoodForToday(emp);
+  if (!sqDom.empMoodText) return;
+  if (!mood) {
+    sqDom.empMoodText.textContent = "No mood logged yet for today.";
+  } else {
+    sqDom.empMoodText.textContent = `Today's mood: ${mood}`;
+  }
+
+  if (sqDom.moodButtons && sqDom.moodButtons.length) {
+    sqDom.moodButtons.forEach((btn) => {
+      btn.classList.toggle(
+        "sq-mood-selected",
+        mood && btn.dataset.mood === mood
+      );
     });
   }
-
-  const streak = sqComputeStreakStats(emp);
-  if (sqDom.employeeXPToday) sqDom.employeeXPToday.textContent = streak.xpToday || 0;
-  if (sqDom.employeeStreakCurrent)
-    sqDom.employeeStreakCurrent.textContent = (streak.currentStreak || 0) + "d";
-  if (sqDom.employeeStreakBest)
-    sqDom.employeeStreakBest.textContent = (streak.bestStreak || 0) + "d";
-
-  if (sqDom.moodStatus) {
-    const moodMap = sqGetMoodMap();
-    const empMood = moodMap[emp.id];
-    const todayKey = new Date().toDateString();
-    if (empMood && empMood.date === todayKey) {
-      sqDom.moodStatus.textContent = `Today's mood: ${empMood.mood}`;
-    } else {
-      sqDom.moodStatus.textContent = "No mood logged for today yet.";
-    }
-  }
 }
 
-// -------- Quests: difficulty + filters --------
+/* ---------- Quest list (employee) ---------- */
 
-function sqGetDifficultyLabel(quest) {
-  const xp = quest.xp || 0;
-  if (xp <= 40) return "Easy";
-  if (xp <= 80) return "Normal";
-  return "Hard";
+function sqDifficultyLabel(xp) {
+  if (xp >= 80) return "Hard";
+  if (xp >= 40) return "Normal";
+  return "Easy";
 }
 
-function sqRenderQuestCategoryFilter() {
-  const select = sqDom.questCategoryFilter;
+function sqRenderQuestCategoryFilterOptions() {
+  if (!sqDom.filterCategorySelect) return;
   const quests = sqGetQuests();
-  const categories = new Set(["all"]);
-  quests.forEach((q) => {
-    if (q.category) categories.add(q.category);
-  });
-  select.innerHTML = "";
-  Array.from(categories).forEach((cat) => {
+  const categories = Array.from(
+    new Set(quests.map((q) => q.category || "General"))
+  );
+  sqDom.filterCategorySelect.innerHTML =
+    '<option value="all">All categories</option>';
+  categories.forEach((cat) => {
     const opt = document.createElement("option");
     opt.value = cat;
-    opt.textContent = cat === "all" ? "All categories" : cat;
-    select.appendChild(opt);
+    opt.textContent = cat;
+    sqDom.filterCategorySelect.appendChild(opt);
   });
 }
 
-function sqRenderQuestTypePills(activeType) {
-  const container = sqDom.questTypeFilters;
-  const buttons = container.querySelectorAll("button[data-type]");
-  buttons.forEach((btn) => {
-    const t = btn.getAttribute("data-type");
-    if (t === activeType) {
-      btn.classList.add("sq-pill-active");
-    } else {
-      btn.classList.remove("sq-pill-active");
-    }
-  });
-}
-
-function sqRenderQuestList(activeEmployeeId, filterType = "all", filterCategory = "all") {
-  const emp = sqGetEmployeeById(activeEmployeeId);
-  const listEl = sqDom.questList;
-  listEl.innerHTML = "";
-
-  const quests = sqGetQuests().filter((q) => {
-    if (filterType !== "all" && q.type !== filterType) return false;
-    if (filterCategory !== "all" && q.category !== filterCategory) return false;
-    return true;
-  });
-
-  if (!quests.length) {
-    const p = document.createElement("p");
-    p.className = "sq-muted sq-caption";
-    p.textContent = "No quests match the current filters.";
-    listEl.appendChild(p);
+function sqRenderQuestList(empId, typeFilter, categoryFilter) {
+  const container = sqDom.questList;
+  if (!container) return;
+  const emp = sqGetEmployeeById(empId);
+  if (!emp) {
+    container.innerHTML =
+      '<p class="sq-muted sq-caption">No employee selected.</p>';
     return;
   }
 
-  quests.forEach((quest) => {
+  const quests = sqGetQuests();
+  const hist = emp.questHistory || [];
+  const todayKey = sqDateKeyFromDate(new Date());
+
+  let filtered = quests.slice();
+  if (typeFilter && typeFilter !== "all") {
+    filtered = filtered.filter((q) => q.type === typeFilter);
+  }
+  if (categoryFilter && categoryFilter !== "all") {
+    filtered = filtered.filter((q) => q.category === categoryFilter);
+  }
+
+  if (!filtered.length) {
+    container.innerHTML =
+      '<p class="sq-muted sq-caption">No quests match this filter.</p>';
+    return;
+  }
+
+  container.innerHTML = "";
+
+  filtered.forEach((quest) => {
     const card = document.createElement("div");
     card.className = "sq-quest-card";
 
-    const main = document.createElement("div");
-    main.className = "sq-quest-main";
+    const header = document.createElement("div");
+    header.className = "sq-quest-header";
 
-    const titleRow = document.createElement("div");
-    titleRow.className = "sq-quest-title-row";
+    const nameEl = document.createElement("div");
+    nameEl.className = "sq-quest-name";
+    nameEl.textContent = quest.name;
 
-    const title = document.createElement("div");
-    title.className = "sq-quest-title";
-    title.textContent = quest.name;
+    const tags = document.createElement("div");
+    tags.className = "sq-quest-tags";
 
-    const catBadge = document.createElement("span");
-    catBadge.className = "sq-badge sq-badge-category";
-    catBadge.textContent = quest.category || "General";
+    const xpTag = document.createElement("span");
+    xpTag.className = "sq-tag sq-tag-accent";
+    xpTag.textContent = `+${quest.xp} XP`;
 
-    const typeBadge = document.createElement("span");
-    typeBadge.className = "sq-badge sq-badge-type";
-    typeBadge.textContent = quest.type;
+    const typeTag = document.createElement("span");
+    typeTag.className = "sq-tag";
+    typeTag.textContent = quest.type;
 
-    const xpBadge = document.createElement("span");
-    xpBadge.className = "sq-badge sq-badge-xp";
-    xpBadge.textContent = `+${quest.xp || 0} XP`;
+    const catTag = document.createElement("span");
+    catTag.className = "sq-tag";
+    catTag.textContent = quest.category || "General";
 
-    const diffBadge = document.createElement("span");
-    diffBadge.className = "sq-badge sq-badge-difficulty";
-    diffBadge.textContent = sqGetDifficultyLabel(quest);
+    const diffTag = document.createElement("span");
+    diffTag.className = "sq-tag";
+    diffTag.textContent = sqDifficultyLabel(quest.xp || 0);
 
-    titleRow.appendChild(title);
-    titleRow.appendChild(catBadge);
-    titleRow.appendChild(typeBadge);
-    titleRow.appendChild(xpBadge);
-    titleRow.appendChild(diffBadge);
+    tags.appendChild(xpTag);
+    tags.appendChild(typeTag);
+    tags.appendChild(catTag);
+    tags.appendChild(diffTag);
 
-    const desc = document.createElement("p");
-    desc.className = "sq-quest-desc";
-    desc.textContent = quest.description || "No description provided.";
+    header.appendChild(nameEl);
+    header.appendChild(tags);
 
     const meta = document.createElement("div");
     meta.className = "sq-quest-meta";
 
-    if (emp) {
-      const history = emp.questHistory || [];
-      const times = history.filter((h) => h.questId === quest.id).length;
-      if (!quest.repeatable && times > 0) {
-        meta.textContent = "Completed (non-repeatable)";
-      } else if (times > 0) {
-        meta.textContent = `Completed ${times} time(s)`;
-      } else {
-        meta.textContent = "Not yet completed";
-      }
+    const totalCount = hist.filter((h) => h.questId === quest.id).length;
+    const todayCount = hist.filter((h) => {
+      if (h.questId !== quest.id) return false;
+      const d = new Date(h.completedAt);
+      return !isNaN(d.getTime()) && sqDateKeyFromDate(d) === todayKey;
+    }).length;
+
+    meta.textContent = `Completed ${totalCount} time${
+      totalCount === 1 ? "" : "s"
+    } · ${todayCount} today`;
+
+    const footer = document.createElement("div");
+    footer.className = "sq-quest-footer";
+
+    const locked = false; // placeholder if we later add lock conditions
+    const requiresVerification = !!quest.requiresVerification;
+    const hasPending =
+      typeof sqHasPendingApproval === "function"
+        ? sqHasPendingApproval(emp.id, quest.id)
+        : false;
+
+    const btn = document.createElement("button");
+    btn.className = "sq-btn sq-btn-primary sq-btn-sm";
+
+    if (locked) {
+      btn.textContent = "Quest locked";
+      btn.disabled = true;
+    } else if (requiresVerification && hasPending) {
+      btn.textContent = "Waiting approval";
+      btn.disabled = true;
+    } else if (requiresVerification) {
+      btn.textContent = "Request approval";
+      btn.disabled = false;
     } else {
-      meta.textContent = "Select an employee to track completion.";
+      btn.textContent = "Complete quest";
+      btn.disabled = false;
     }
 
-    main.appendChild(titleRow);
-    main.appendChild(desc);
-    main.appendChild(meta);
-
-    const action = document.createElement("div");
-    if (emp) {
-      const history = emp.questHistory || [];
-      const times = history.filter((h) => h.questId === quest.id).length;
-      const locked = !quest.repeatable && times > 0;
-
-      const btn = document.createElement("button");
-      btn.className = "sq-btn sq-btn-primary sq-btn-sm";
-      btn.textContent = locked ? "Quest locked" : "Complete quest";
-      btn.disabled = locked;
-
-      btn.addEventListener("click", () => {
-        if (locked) return;
+    btn.addEventListener("click", () => {
+      if (locked) return;
+      if (!requiresVerification) {
         if (typeof sqHandleQuestCompleted === "function") {
-          sqHandleQuestCompleted(emp.id, quest.id);
+          sqHandleQuestCompleted(emp.id, quest.id, false);
         }
-      });
+      } else {
+        if (hasPending) return;
+        if (typeof sqAddPendingApproval === "function") {
+          sqAddPendingApproval(emp.id, quest.id);
+          sqShowToast(
+            "Approval requested",
+            "This quest is now in the manager verification queue."
+          );
+          // Re-render list so button updates to 'Waiting approval'
+          sqRenderQuestList(
+            emp.id,
+            window.sqActiveQuestTypeFilter || "all",
+            window.sqActiveQuestCategoryFilter || "all"
+          );
+          if (typeof sqRenderVerificationQueue === "function") {
+            sqRenderVerificationQueue();
+          }
+        } else {
+          sqShowToast(
+            "Not available",
+            "Pending approvals are not configured."
+          );
+        }
+      }
+    });
 
-      action.appendChild(btn);
-    }
+    footer.appendChild(btn);
 
-    card.appendChild(main);
-    card.appendChild(action);
-    listEl.appendChild(card);
+    card.appendChild(header);
+    card.appendChild(meta);
+    card.appendChild(footer);
+
+    container.appendChild(card);
   });
 }
 
-function sqSuggestRandomQuest() {
-  const empId = sqDom.employeeSelect && sqDom.employeeSelect.value;
+/* ---------- Quest history modal ---------- */
+
+function sqOpenHistoryModal(empId) {
   const emp = sqGetEmployeeById(empId);
-  if (!emp) {
-    sqShowToast("Pick an employee", "Select an employee profile first.");
-    return;
-  }
+  if (!emp || !sqDom.historyModal || !sqDom.historyList) return;
 
-  const quests = sqGetQuests();
-  if (!quests.length) {
-    sqShowToast("No quests yet", "Managers can add quests in the Manager view.");
-    return;
-  }
-
-  const idx = Math.floor(Math.random() * quests.length);
-  const q = quests[idx];
-  sqShowToast("Random quest", `${q.name} (+${q.xp || 0} XP)`);
-}
-
-// -------- Manager: team + top performers + today summary --------
-
-function sqRenderEmployeeTable(filterText = "") {
-  const employees = sqGetEmployees();
-  const tbody = sqDom.employeeTableBody;
-  tbody.innerHTML = "";
-
-  const text = (filterText || "").toLowerCase();
-
-  const filtered = employees.filter((emp) => {
-    if (!text) return true;
-    return (
-      (emp.name || "").toLowerCase().includes(text) ||
-      (emp.role || "").toLowerCase().includes(text)
+  sqDom.historyList.innerHTML = "";
+  const history = (emp.questHistory || [])
+    .slice()
+    .sort(
+      (a, b) =>
+        new Date(b.completedAt).getTime() -
+        new Date(a.completedAt).getTime()
     );
-  });
 
-  if (!filtered.length) {
-    sqDom.employeeListEmpty.textContent = employees.length
-      ? "No employees match this search."
-      : "No employees yet. Add at least one to begin.";
-    sqDom.employeeListEmpty.classList.remove("sq-hidden");
-    sqDom.employeeTableWrapper.classList.add("sq-hidden");
+  if (!history.length) {
+    const li = document.createElement("li");
+    li.className = "sq-history-item";
+    li.textContent = "No quests completed yet.";
+    sqDom.historyList.appendChild(li);
   } else {
-    sqDom.employeeListEmpty.classList.add("sq-hidden");
-    sqDom.employeeTableWrapper.classList.remove("sq-hidden");
+    history.forEach((h) => {
+      const quest = sqGetQuestById(h.questId);
+      const name = quest ? quest.name : "Unknown quest";
+      const xp = h.xpEarned || (quest ? quest.xp || 0 : 0);
+      const d = new Date(h.completedAt);
+      const dateStr = isNaN(d.getTime())
+        ? h.completedAt
+        : d.toLocaleString();
+      const status = h.verified ? "Manager verified" : "Self-completed";
 
-    filtered.forEach((emp) => {
-      const tr = document.createElement("tr");
-      const xp = emp.xp || 0;
-      const level = sqGetLevel(xp);
-      const questCount = sqGetQuestCountsForEmployee(emp);
-
-      const nameTd = document.createElement("td");
-      nameTd.textContent = emp.name;
-
-      const roleTd = document.createElement("td");
-      roleTd.textContent = emp.role || "–";
-
-      const levelTd = document.createElement("td");
-      levelTd.textContent = level;
-
-      const xpTd = document.createElement("td");
-      xpTd.textContent = xp;
-
-      const qTd = document.createElement("td");
-      qTd.textContent = questCount;
-
-      tr.appendChild(nameTd);
-      tr.appendChild(roleTd);
-      tr.appendChild(levelTd);
-      tr.appendChild(xpTd);
-      tr.appendChild(qTd);
-      tbody.appendChild(tr);
+      const li = document.createElement("li");
+      li.className = "sq-history-item";
+      li.innerHTML = `<strong>${name}</strong> · +${xp} XP<br /><span class="sq-muted">${dateStr} · ${status}</span>`;
+      sqDom.historyList.appendChild(li);
     });
   }
 
-  sqRenderTeamSummary();
+  sqDom.historyModal.classList.remove("sq-hidden");
+}
+
+/* ---------- Manager: employees & summary ---------- */
+
+function sqRenderEmployeeTable() {
+  const body = sqDom.employeeTableBody;
+  if (!body) return;
+  const employees = sqGetEmployees();
+  body.innerHTML = "";
+  employees.forEach((emp) => {
+    const tr = document.createElement("tr");
+    const level = sqGetLevel(emp.xp || 0);
+    const quests = sqGetQuestCountsForEmployee(emp);
+
+    tr.innerHTML = `
+      <td>${emp.name}</td>
+      <td>${emp.role || "–"}</td>
+      <td>${level}</td>
+      <td>${emp.xp || 0}</td>
+      <td>${quests}</td>
+    `;
+    body.appendChild(tr);
+  });
 }
 
 function sqRenderTopPerformers(employees) {
-  const ul = sqDom.topPerformersList;
-  if (!ul) return;
-  ul.innerHTML = "";
-
-  if (!employees.length) {
+  const list = sqDom.topPerformersList;
+  if (!list) return;
+  const sorted = employees.slice().sort((a, b) => (b.xp || 0) - (a.xp || 0));
+  const top = sorted.slice(0, 5);
+  list.innerHTML = "";
+  if (!top.length) {
     const li = document.createElement("li");
     li.className = "sq-muted sq-caption";
     li.textContent = "No employees yet.";
-    ul.appendChild(li);
+    list.appendChild(li);
+    return;
+  }
+  top.forEach((emp, idx) => {
+    const li = document.createElement("li");
+    const level = sqGetLevel(emp.xp || 0);
+    li.innerHTML = `<span>${idx + 1}. ${emp.name}</span><span>Lv ${level} · ${
+      emp.xp || 0
+    } XP</span>`;
+    list.appendChild(li);
+  });
+}
+
+function sqRenderActivityList() {
+  const listEl = sqDom.activityList;
+  if (!listEl) return;
+
+  const employees = sqGetEmployees();
+  const items = [];
+
+  employees.forEach((emp) => {
+    const history = emp.questHistory || [];
+    history.forEach((h) => {
+      const quest = sqGetQuestById(h.questId);
+      const xp = h.xpEarned || (quest ? quest.xp || 0 : 0);
+      const date = new Date(h.completedAt);
+      const dateStr = isNaN(date.getTime())
+        ? h.completedAt
+        : date.toLocaleString();
+      const verified = !!h.verified;
+      items.push({
+        empName: emp.name,
+        questName: quest ? quest.name : "Unknown quest",
+        xp,
+        dateStr,
+        verified,
+        completedAtRaw: h.completedAt
+      });
+    });
+  });
+
+  if (!items.length) {
+    listEl.innerHTML =
+      '<p class="sq-muted sq-caption">No quest activity yet.</p>';
     return;
   }
 
-  const sorted = employees
-    .slice()
-    .sort((a, b) => (b.xp || 0) - (a.xp || 0))
-    .slice(0, 3);
+  items.sort(
+    (a, b) =>
+      new Date(b.completedAtRaw).getTime() -
+      new Date(a.completedAtRaw).getTime()
+  );
 
-  sorted.forEach((emp, index) => {
-    const xp = emp.xp || 0;
-    const level = sqGetLevel(xp);
-    const li = document.createElement("li");
-    li.innerHTML = `<strong>${index + 1}. ${emp.name}</strong> – Lv ${level}, ${xp} XP`;
-    ul.appendChild(li);
+  const latest = items.slice(0, 10);
+  listEl.innerHTML = "";
+  latest.forEach((item) => {
+    const div = document.createElement("div");
+    div.className = "sq-history-item";
+    const statusText = item.verified ? "Manager verified" : "Self-completed";
+    div.innerHTML = `<strong>${item.empName} – ${
+      item.questName
+    }</strong> · +${
+      item.xp
+    } XP<br /><span class="sq-muted">${item.dateStr} · ${statusText}</span>`;
+    listEl.appendChild(div);
   });
+}
+
+function sqComputeTeamQuestProgress(tq) {
+  const employees = sqGetEmployees();
+  let current = 0;
+  const target = tq.target || 0;
+
+  const now = new Date();
+  const todayKey = sqDateKeyFromDate(now);
+  const sevenDaysAgo = new Date(now);
+  sevenDaysAgo.setDate(now.getDate() - 6);
+
+  employees.forEach((emp) => {
+    (emp.questHistory || []).forEach((h) => {
+      const d = new Date(h.completedAt);
+      if (isNaN(d.getTime())) return;
+
+      if (tq.metric === "quests_7d") {
+        if (d >= sevenDaysAgo && d <= now) {
+          current += 1;
+        }
+      } else if (tq.metric === "quests_today_cleanliness") {
+        if (sqDateKeyFromDate(d) !== todayKey) return;
+        const q = sqGetQuestById(h.questId);
+        if (!q) return;
+        if ((q.category || "").toLowerCase() === "cleanliness") {
+          current += 1;
+        }
+      }
+    });
+  });
+
+  const percent =
+    target > 0
+      ? Math.max(0, Math.min(100, Math.round((current / target) * 100)))
+      : 0;
+
+  return { current, target, percent };
+}
+
+function sqRenderTeamQuests() {
+  const teamQuests =
+    typeof sqGetTeamQuests === "function" ? sqGetTeamQuests() : [];
+  const tqEmp = sqDom.teamQuestsEmployee;
+  const tqMgr = sqDom.teamQuestsManager;
+
+  const renderInto = (container, compactLabel) => {
+    if (!container) return;
+    container.innerHTML = "";
+
+    if (!teamQuests.length) {
+      const p = document.createElement("p");
+      p.className = "sq-muted sq-caption";
+      p.textContent = "No active team quests.";
+      container.appendChild(p);
+      return;
+    }
+
+    teamQuests.forEach((tq) => {
+      const { current, target, percent } = sqComputeTeamQuestProgress(tq);
+      const item = document.createElement("div");
+      item.className = "sq-team-quest-item";
+
+      const title = document.createElement("div");
+      title.className = "sq-team-quest-title";
+      title.textContent = tq.name;
+
+      const desc = document.createElement("p");
+      desc.className = "sq-team-quest-desc";
+      desc.textContent = tq.description || "";
+
+      const progWrap = document.createElement("div");
+      progWrap.className = "sq-progress-bar";
+      const progFill = document.createElement("div");
+      progFill.className = "sq-progress-fill";
+      progFill.style.width = `${percent}%`;
+      progWrap.appendChild(progFill);
+
+      const meta = document.createElement("div");
+      meta.className = "sq-team-quest-meta";
+      meta.textContent = `${current} / ${target} ${
+        compactLabel || "tasks completed"
+      }`;
+
+      item.appendChild(title);
+      item.appendChild(desc);
+      item.appendChild(progWrap);
+      item.appendChild(meta);
+
+      container.appendChild(item);
+    });
+  };
+
+  renderInto(tqEmp, "steps done");
+  renderInto(tqMgr, "toward goal");
 }
 
 function sqRenderTeamSummary() {
+  const stats = sqGetTeamStats();
   const employees = sqGetEmployees();
-  if (!employees.length) {
-    sqDom.teamTotalXP.textContent = "0";
-    sqDom.teamAvgLevel.textContent = "0";
-    sqDom.teamTotalQuests.textContent = "0";
 
-    if (sqDom.teamQuestsToday) sqDom.teamQuestsToday.textContent = "0";
-    if (sqDom.teamXPToday) sqDom.teamXPToday.textContent = "0";
-    if (sqDom.teamMostActiveToday) sqDom.teamMostActiveToday.textContent = "–";
-
-    if (sqDom.topPerformersList) {
-      sqDom.topPerformersList.innerHTML = "";
-    }
-    return;
-  }
-
-  let totalXP = 0;
-  let totalQuests = 0;
-  let totalLevel = 0;
-
-  const todayKey = new Date().toDateString();
-  let questsToday = 0;
-  let xpToday = 0;
-  let mostActive = null;
-  let mostActiveCount = 0;
-
-  employees.forEach((emp) => {
-    const xp = emp.xp || 0;
-    totalXP += xp;
-    totalLevel += sqGetLevel(xp);
-    const questCount = sqGetQuestCountsForEmployee(emp);
-    totalQuests += questCount;
-
-    const history = emp.questHistory || [];
-    let empQuestsToday = 0;
-    let empXPToday = 0;
-
-    history.forEach((h) => {
-      const d = new Date(h.completedAt);
-      if (isNaN(d.getTime())) return;
-      if (d.toDateString() !== todayKey) return;
-
-      empQuestsToday += 1;
-      const q = sqGetQuestById(h.questId);
-      const gained = h.xpEarned || (q ? q.xp || 0 : 0);
-      empXPToday += gained;
-    });
-
-    questsToday += empQuestsToday;
-    xpToday += empXPToday;
-
-    if (empQuestsToday > mostActiveCount) {
-      mostActiveCount = empQuestsToday;
-      mostActive = emp;
-    }
-  });
-
-  const avgLevel = totalLevel / employees.length;
-
-  sqDom.teamTotalXP.textContent = String(totalXP);
-  sqDom.teamAvgLevel.textContent = avgLevel.toFixed(1);
-  sqDom.teamTotalQuests.textContent = String(totalQuests);
+  if (sqDom.teamTotalXP)
+    sqDom.teamTotalXP.textContent = String(stats.totalXP || 0);
+  if (sqDom.teamAvgLevel)
+    sqDom.teamAvgLevel.textContent = (stats.avgLevel || 0).toFixed(1);
+  if (sqDom.teamTotalQuests)
+    sqDom.teamTotalQuests.textContent = String(stats.totalQuests || 0);
 
   if (sqDom.teamQuestsToday)
-    sqDom.teamQuestsToday.textContent = String(questsToday);
-  if (sqDom.teamXPToday) sqDom.teamXPToday.textContent = String(xpToday);
+    sqDom.teamQuestsToday.textContent = String(stats.questsToday || 0);
+  if (sqDom.teamXPToday)
+    sqDom.teamXPToday.textContent = String(stats.xpToday || 0);
   if (sqDom.teamMostActiveToday) {
-    sqDom.teamMostActiveToday.textContent = mostActive ? mostActive.name : "–";
+    sqDom.teamMostActiveToday.textContent = stats.mostActive
+      ? stats.mostActive.name
+      : "–";
   }
 
   sqRenderTopPerformers(employees);
+  sqRenderActivityList();
+  sqRenderTeamQuests();
 }
 
-// -------- Quest manager --------
+/* ---------- Verification Queue ---------- */
 
-function sqFillQuestForm(quest) {
-  if (!quest) {
-    sqDom.questIdInput.value = "";
-    sqDom.questNameInput.value = "";
-    sqDom.questCategoryInput.value = "";
-    sqDom.questTypeInput.value = "core";
-    sqDom.questXPInput.value = "50";
-    sqDom.questRepeatableInput.checked = true;
-    sqDom.questDescriptionInput.value = "";
-    sqDom.questCancelEditBtn.classList.add("sq-hidden");
-    return;
-  }
-  sqDom.questIdInput.value = quest.id;
-  sqDom.questNameInput.value = quest.name || "";
-  sqDom.questCategoryInput.value = quest.category || "";
-  sqDom.questTypeInput.value = quest.type || "core";
-  sqDom.questXPInput.value = quest.xp || 50;
-  sqDom.questRepeatableInput.checked = !!quest.repeatable;
-  sqDom.questDescriptionInput.value = quest.description || "";
-  sqDom.questCancelEditBtn.classList.remove("sq-hidden");
-}
+function sqRenderVerificationQueue() {
+  const container = sqDom.verificationQueue;
+  if (!container) return;
 
-function sqRenderQuestManagerList() {
-  const quests = sqGetQuests();
-  const listEl = sqDom.questManagerList;
-  listEl.innerHTML = "";
-  if (!quests.length) {
+  const pending =
+    typeof sqGetPendingApprovals === "function"
+      ? sqGetPendingApprovals()
+      : [];
+
+  container.innerHTML = "";
+
+  if (!pending.length) {
     const p = document.createElement("p");
     p.className = "sq-muted sq-caption";
-    p.textContent = "No quests yet. Add a few to get started.";
-    listEl.appendChild(p);
+    p.textContent = "No quests waiting for approval.";
+    container.appendChild(p);
     return;
   }
+
+  pending
+    .slice()
+    .sort(
+      (a, b) =>
+        new Date(b.requestedAt).getTime() -
+        new Date(a.requestedAt).getTime()
+    )
+    .forEach((p) => {
+      const emp = sqGetEmployeeById(p.empId);
+      const quest = sqGetQuestById(p.questId);
+      const empName = emp ? emp.name : "Unknown employee";
+      const questName = quest ? quest.name : "Unknown quest";
+      const date = new Date(p.requestedAt);
+      const dateStr = isNaN(date.getTime())
+        ? p.requestedAt
+        : date.toLocaleString();
+
+      const item = document.createElement("div");
+      item.className = "sq-quest-manager-item";
+
+      const main = document.createElement("div");
+      main.className = "sq-quest-manager-main";
+
+      const title = document.createElement("div");
+      title.className = "sq-quest-manager-title";
+      title.textContent = `${empName} – ${questName}`;
+
+      const meta = document.createElement("div");
+      meta.className = "sq-quest-manager-meta";
+      meta.textContent = `${dateStr}`;
+
+      main.appendChild(title);
+      main.appendChild(meta);
+
+      const actions = document.createElement("div");
+      actions.className = "sq-quest-manager-actions";
+
+      const approveBtn = document.createElement("button");
+      approveBtn.className = "sq-btn sq-btn-primary sq-btn-xs";
+      approveBtn.textContent = "Approve";
+      approveBtn.addEventListener("click", () => {
+        sqHandleQuestCompleted(p.empId, p.questId, true);
+        sqRemovePendingApproval(p.id);
+        sqRenderVerificationQueue();
+
+        const activeEmpId = window.sqCurrentEmployeeId;
+        if (activeEmpId) {
+          sqRenderQuestList(
+            activeEmpId,
+            window.sqActiveQuestTypeFilter || "all",
+            window.sqActiveQuestCategoryFilter || "all"
+          );
+        }
+      });
+
+      const rejectBtn = document.createElement("button");
+      rejectBtn.className = "sq-btn sq-btn-ghost sq-btn-xs";
+      rejectBtn.textContent = "Reject";
+      rejectBtn.addEventListener("click", () => {
+        sqRemovePendingApproval(p.id);
+        sqRenderVerificationQueue();
+        sqShowToast(
+          "Quest rejected",
+          "This quest request was removed from the queue."
+        );
+      });
+
+      actions.appendChild(approveBtn);
+      actions.appendChild(rejectBtn);
+
+      item.appendChild(main);
+      item.appendChild(actions);
+      container.appendChild(item);
+    });
+}
+
+/* ---------- Quest Manager (manager) ---------- */
+
+function sqRenderQuestManagerList() {
+  const container = sqDom.questManagerList;
+  if (!container) return;
+  const quests = sqGetQuests();
+  container.innerHTML = "";
+  if (!quests.length) {
+    container.innerHTML =
+      '<p class="sq-muted sq-caption">No quests yet. Add one to get started.</p>';
+    return;
+  }
+
   quests.forEach((q) => {
     const item = document.createElement("div");
     item.className = "sq-quest-manager-item";
@@ -709,9 +772,11 @@ function sqRenderQuestManagerList() {
 
     const meta = document.createElement("div");
     meta.className = "sq-quest-manager-meta";
-    meta.textContent = `${
-      q.category || "General"
-    } · ${q.type} · XP: ${q.xp || 0} · ${sqGetDifficultyLabel(q)} difficulty`;
+    const diff = sqDifficultyLabel(q.xp || 0);
+    const verifyLabel = q.requiresVerification ? " · requires approval" : "";
+    meta.textContent = `${q.category || "General"} · ${
+      q.type
+    } · +${q.xp} XP · ${diff}${verifyLabel}`;
 
     main.appendChild(title);
     main.appendChild(meta);
@@ -720,86 +785,20 @@ function sqRenderQuestManagerList() {
     actions.className = "sq-quest-manager-actions";
 
     const editBtn = document.createElement("button");
-    editBtn.className = "sq-btn sq-btn-ghost sq-btn-xs";
+    editBtn.className = "sq-btn sq-btn-secondary sq-btn-xs sq-quest-edit";
     editBtn.textContent = "Edit";
-    editBtn.addEventListener("click", () => {
-      const fullQuest = sqGetQuestById(q.id);
-      sqFillQuestForm(fullQuest);
-    });
+    editBtn.dataset.questId = q.id;
 
-    const delBtn = document.createElement("button");
-    delBtn.className = "sq-btn sq-btn-danger sq-btn-xs";
-    delBtn.textContent = "Delete";
-    delBtn.addEventListener("click", () => {
-      if (confirm("Delete this quest? This cannot be undone.")) {
-        sqDeleteQuest(q.id);
-        sqRenderQuestManagerList();
-        sqRenderQuestCategoryFilter();
-        if (window.sqRefreshEmployeeQuestList)
-          window.sqRefreshEmployeeQuestList();
-      }
-    });
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "sq-btn sq-btn-ghost sq-btn-xs sq-quest-delete";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.dataset.questId = q.id;
 
     actions.appendChild(editBtn);
-    actions.appendChild(delBtn);
+    actions.appendChild(deleteBtn);
 
     item.appendChild(main);
     item.appendChild(actions);
-    listEl.appendChild(item);
+    container.appendChild(item);
   });
-}
-
-// -------- History modal --------
-
-function sqOpenHistoryModal(empId) {
-  const emp = sqGetEmployeeById(empId);
-  if (!emp) return;
-  sqDom.historyModal.classList.remove("sq-hidden");
-
-  const body = sqDom.historyModalBody;
-  body.innerHTML = "";
-  const history = (emp.questHistory || []).slice().sort((a, b) => {
-    return new Date(b.completedAt) - new Date(a.completedAt);
-  });
-
-  if (!history.length) {
-    const p = document.createElement("p");
-    p.className = "sq-muted";
-    p.textContent = "No quest history yet.";
-    body.appendChild(p);
-    return;
-  }
-
-  const ul = document.createElement("ul");
-  ul.className = "sq-history-list";
-
-  history.forEach((h) => {
-    const li = document.createElement("li");
-    li.className = "sq-history-item";
-
-    const quest = sqGetQuestById(h.questId);
-    const name = quest ? quest.name : "Unknown quest";
-    const xp = h.xpEarned || (quest ? quest.xp || 0 : 0);
-    const date = new Date(h.completedAt);
-    const dateStr = isNaN(date.getTime()) ? h.completedAt : date.toLocaleString();
-
-    li.innerHTML = `<strong>${name}</strong> · +${xp} XP<br /><span class="sq-muted">${dateStr}</span>`;
-    ul.appendChild(li);
-  });
-
-  body.appendChild(ul);
-}
-
-function sqCloseHistoryModal() {
-  sqDom.historyModal.classList.add("sq-hidden");
-}
-
-// -------- Help modal --------
-
-function sqOpenHelpModal() {
-  sqDom.helpModal.classList.remove("sq-hidden");
-}
-
-function sqCloseHelpModal() {
-  sqDom.helpModal.classList.add("sq-hidden");
 }
