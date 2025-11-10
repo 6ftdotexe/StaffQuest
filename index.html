@@ -1,48 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>StaffQuest – Gamified Training for Restaurant Teams</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/styles.css" />
-</head>
-<body>
-  <div class="sq-app-shell">
-    <header class="sq-header">
-      <div class="sq-header-left">
-        <div class="sq-logo">SQ</div>
-        <div>
-          <h1>StaffQuest</h1>
-          <p class="sq-subtitle">Leveling up restaurant training.</p>
-        </div>
-      </div>
-      <div class="sq-header-right">
-        <div class="sq-header-tabs">
-          <button id="employeeViewBtn" class="sq-tab-btn sq-tab-active">Employee</button>
-          <button id="managerViewBtn" class="sq-tab-btn">Manager</button>
-        </div>
-        <div class="sq-user-info">
-          <span id="userStatus">Not signed in</span>
-          <div class="sq-row sq-gap-sm">
-            <button id="helpBtn" class="sq-btn sq-btn-ghost sq-btn-xs">Help</button>
-            <button id="logoutBtn" class="sq-btn sq-btn-ghost sq-btn-xs">Log out</button>
+  <head>
+    <meta charset="UTF-8" />
+    <title>StaffQuest</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="sq-app">
+      <header class="sq-header">
+        <div class="sq-header-left">
+          <div class="sq-logo-circle">SQ</div>
+          <div class="sq-logo-text">
+            <div class="sq-logo-title">StaffQuest</div>
+            <div class="sq-logo-subtitle">Gamified Training for Restaurant Teams</div>
           </div>
         </div>
-      </div>
-    </header>
+        <div class="sq-header-right">
+          <button id="logoutBtn" class="sq-btn sq-btn-ghost sq-btn-sm sq-hidden">
+            Log out
+          </button>
+        </div>
+      </header>
 
-    <main class="sq-main">
-      <!-- LOGIN VIEW -->
-      <section id="loginView" class="sq-view">
-        <div class="sq-layout-single">
-          <div class="sq-card sq-card-glow">
-            <h2>Sign in to StaffQuest</h2>
+      <main class="sq-main-root">
+        <!-- Login Screen -->
+        <section id="loginScreen" class="sq-main sq-main-login">
+          <div class="sq-login-card sq-card">
+            <h1>Welcome to StaffQuest</h1>
             <p class="sq-muted">
-              Choose a role to explore the prototype. Authentication is demo-only and local.
+              Level up training with quests, XP, and team analytics.
             </p>
 
             <label class="sq-label">
-              I am a...
+              I am a…
               <select id="loginRoleSelect" class="sq-input">
                 <option value="employee">Employee</option>
                 <option value="manager">Manager</option>
@@ -54,372 +45,336 @@
                 Employee profile
                 <select id="loginEmployeeSelect" class="sq-input"></select>
               </label>
+
+              <label id="employeePinBlock" class="sq-label sq-mt-sm">
+                Employee PIN
+                <input
+                  type="password"
+                  id="employeePinInput"
+                  class="sq-input"
+                  placeholder="Your 4-digit PIN"
+                />
+              </label>
+
               <p class="sq-muted sq-caption">
                 Profiles come from the employee directory. Managers can add more.
               </p>
             </div>
 
-            <div id="managerPinBlock" class="sq-hidden">
+            <div id="managerPinBlock" class="sq-hidden sq-mt">
               <label class="sq-label">
                 Manager PIN
-                <input type="password" id="managerPinInput" class="sq-input" placeholder="Demo PIN: 1234" />
+                <input
+                  type="password"
+                  id="managerPinInput"
+                  class="sq-input"
+                  placeholder="Manager PIN (demo: 1234)"
+                />
               </label>
+              <p class="sq-muted sq-caption">
+                Manager access unlocks dashboards, quest management, and demo tools.
+              </p>
             </div>
 
-            <div class="sq-row-right sq-mt-md">
-              <button id="loginContinueBtn" class="sq-btn sq-btn-primary">Continue</button>
-            </div>
-
-            <p class="sq-muted sq-caption sq-mt-sm">
-              Data is stored locally in this browser using <code>localStorage</code> for demo purposes.
-            </p>
+            <button id="loginContinueBtn" class="sq-btn sq-btn-primary sq-btn-lg sq-mt">
+              Continue
+            </button>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- EMPLOYEE VIEW -->
-      <section id="employeeView" class="sq-view sq-hidden">
-        <div class="sq-layout-2col">
-          <div class="sq-col">
-            <div class="sq-card">
-              <div class="sq-card-header">
-                <h2>Player Profile</h2>
-                <button id="employeeManageBtn" class="sq-btn sq-btn-ghost sq-btn-xs">Manage employees</button>
-              </div>
-
-              <label class="sq-label">
-                Active employee
-                <select id="employeeSelect" class="sq-input"></select>
-              </label>
-
-              <div id="employeeProfileEmpty" class="sq-muted sq-caption sq-mt-sm">
-                No employees yet. Use the manager view to add some.
-              </div>
-
-              <div id="employeeProfilePanel" class="sq-profile sq-hidden">
+        <!-- Employee Screen -->
+        <section id="employeeScreen" class="sq-main sq-main-employee sq-hidden">
+          <div class="sq-grid sq-grid-2">
+            <!-- Left Column -->
+            <div class="sq-col">
+              <!-- Profile -->
+              <div class="sq-card">
+                <div class="sq-card-header-row">
+                  <h2>Player profile</h2>
+                  <span id="empTitle" class="sq-pill sq-pill-soft">Rookie</span>
+                </div>
                 <div class="sq-profile-main">
                   <div>
-                    <p id="employeeNameDisplay" class="sq-profile-name"></p>
-                    <p id="employeeRoleDisplay" class="sq-muted sq-profile-role"></p>
+                    <div id="empName" class="sq-profile-name">–</div>
+                    <div id="empRole" class="sq-profile-role">–</div>
                   </div>
-                  <div class="sq-chip sq-chip-soft">
-                    <span id="employeeLevelLabel">Lv 1</span>
-                  </div>
-                </div>
-
-                <div class="sq-stat-row">
-                  <div>
-                    <p class="sq-stat-label">XP</p>
-                    <p id="employeeXP" class="sq-stat-value">0</p>
-                  </div>
-                  <div>
-                    <p class="sq-stat-label">Next level</p>
-                    <p id="employeeNextLevel" class="sq-stat-value">100 XP</p>
-                  </div>
-                  <div>
-                    <p class="sq-stat-label">Quests done</p>
-                    <p id="employeeQuestCount" class="sq-stat-value">0</p>
+                  <div class="sq-profile-level">
+                    <div class="sq-profile-level-label">Level</div>
+                    <div id="empLevel" class="sq-profile-level-value">1</div>
                   </div>
                 </div>
 
-                <div class="sq-progress-wrapper">
-                  <div class="sq-progress-header">
-                    <span>Progress to next level</span>
-                    <span id="progressLabel">0 / 100 XP</span>
+                <div class="sq-progress-row">
+                  <div class="sq-progress-label">
+                    <span id="empXP">0 XP</span>
+                    <span id="empQuestsDone" class="sq-muted-small">0 quests done</span>
                   </div>
                   <div class="sq-progress-bar">
-                    <div id="progressFill" class="sq-progress-fill"></div>
+                    <div id="empXPProgressFill" class="sq-progress-fill"></div>
                   </div>
                 </div>
 
-                <div class="sq-mt-md">
-                  <p class="sq-stat-label">Achievements</p>
-                  <ul id="employeeAchievementsList" class="sq-achievements"></ul>
-                </div>
-
-                <!-- Today & streak -->
-                <div class="sq-mt-md">
-                  <p class="sq-stat-label">Today & streak</p>
-                  <div class="sq-stat-row">
-                    <div>
-                      <p class="sq-stat-label">XP today</p>
-                      <p id="employeeXPToday" class="sq-stat-value">0</p>
-                    </div>
-                    <div>
-                      <p class="sq-stat-label">Current streak</p>
-                      <p id="employeeStreakCurrent" class="sq-stat-value">0d</p>
-                    </div>
-                    <div>
-                      <p class="sq-stat-label">Best streak</p>
-                      <p id="employeeStreakBest" class="sq-stat-value">0d</p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Mood check-in -->
-                <div class="sq-mt-md">
-                  <p class="sq-stat-label">Shift check-in</p>
-                  <div class="sq-mood-row" id="moodButtons">
-                    <button type="button" class="sq-mood-btn" data-mood="😡" title="Rough shift">😡</button>
-                    <button type="button" class="sq-mood-btn" data-mood="😕" title="Meh">😕</button>
-                    <button type="button" class="sq-mood-btn" data-mood="😌" title="Okay">😌</button>
-                    <button type="button" class="sq-mood-btn" data-mood="😊" title="Good">😊</button>
-                    <button type="button" class="sq-mood-btn" data-mood="🤩" title="Amazing">🤩</button>
-                  </div>
-                  <p class="sq-muted sq-caption" id="moodStatus">
-                    No mood logged for today yet.
-                  </p>
-                </div>
-
-                <div class="sq-row-between sq-mt-md">
-                  <button id="viewHistoryBtn" class="sq-btn sq-btn-ghost sq-btn-xs">View quest history</button>
-                  <button id="resetEmployeeBtn" class="sq-btn sq-btn-outline sq-btn-xs">Reset this profile</button>
+                <div>
+                  <h3 class="sq-section-subtitle">Achievements</h3>
+                  <ul id="empAchievementsList" class="sq-achievements-list"></ul>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div class="sq-col">
-            <div class="sq-card">
-              <div class="sq-card-header">
-                <h2>Available Quests</h2>
-                <p class="sq-muted">Daily, weekly, and core quests mapped to real restaurant tasks.</p>
-              </div>
+              <!-- Today & streak -->
+              <div class="sq-card">
+                <h3>Today & streak</h3>
+                <div class="sq-kpi-row">
+                  <div class="sq-kpi">
+                    <div class="sq-kpi-label">XP today</div>
+                    <div id="empXPToday" class="sq-kpi-value">0</div>
+                  </div>
+                  <div class="sq-kpi">
+                    <div class="sq-kpi-label">Current streak</div>
+                    <div id="empStreakCurrent" class="sq-kpi-value">0</div>
+                  </div>
+                  <div class="sq-kpi">
+                    <div class="sq-kpi-label">Best streak</div>
+                    <div id="empStreakBest" class="sq-kpi-value">0</div>
+                  </div>
+                </div>
 
-              <div class="sq-row-between sq-mb-sm">
-                <p class="sq-muted sq-caption">
-                  Tap a quest or let StaffQuest pick one for you.
-                </p>
-                <button id="randomQuestBtn" class="sq-btn sq-btn-outline sq-btn-xs">
-                  Random quest
+                <button id="viewHistoryBtn" class="sq-btn sq-btn-ghost sq-btn-sm sq-mt-sm">
+                  View quest history
                 </button>
               </div>
 
-              <div class="sq-row-wrap sq-gap-sm sq-mb-sm">
-                <div class="sq-pill-group" id="questTypeFilters">
-                  <button data-type="all" class="sq-pill sq-pill-active">All</button>
-                  <button data-type="daily" class="sq-pill">Daily</button>
-                  <button data-type="weekly" class="sq-pill">Weekly</button>
-                  <button data-type="core" class="sq-pill">Core</button>
+              <!-- Mood check-in -->
+              <div class="sq-card">
+                <h3>Shift check-in</h3>
+                <p class="sq-muted sq-caption">
+                  Tap an emoji that best matches how your shift felt today.
+                </p>
+                <div class="sq-mood-row">
+                  <button class="sq-mood-btn" data-mood="😡">😡</button>
+                  <button class="sq-mood-btn" data-mood="😕">😕</button>
+                  <button class="sq-mood-btn" data-mood="😐">😐</button>
+                  <button class="sq-mood-btn" data-mood="🙂">🙂</button>
+                  <button class="sq-mood-btn" data-mood="🤩">🤩</button>
                 </div>
-                <div class="sq-flex-grow"></div>
-                <select id="questCategoryFilter" class="sq-input sq-input-sm">
-                  <option value="all">All categories</option>
-                </select>
+                <p id="empMoodText" class="sq-muted sq-caption sq-mt-sm">
+                  No mood logged yet for today.
+                </p>
               </div>
 
-              <div id="questList" class="sq-quest-list"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- MANAGER VIEW -->
-      <section id="managerView" class="sq-view sq-hidden">
-        <div class="sq-layout-2col">
-          <div class="sq-col">
-            <div class="sq-card">
-              <div class="sq-card-header">
-                <h2>Team Overview</h2>
-                <p class="sq-muted">Search and track your team’s progress at a glance.</p>
-              </div>
-
-              <div class="sq-row sq-mb-sm">
-                <input id="employeeSearchInput" class="sq-input sq-input-sm" placeholder="Search by name or role" />
-                <button id="addEmployeeBtn" class="sq-btn sq-btn-primary sq-btn-sm">+ Employee</button>
-              </div>
-
-              <div id="employeeListEmpty" class="sq-muted sq-caption">
-                No employees yet. Add at least one to begin.
-              </div>
-
-              <div id="employeeTableWrapper" class="sq-table-wrapper sq-hidden">
-                <table class="sq-table">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Role</th>
-                      <th>Level</th>
-                      <th>XP</th>
-                      <th>Quests</th>
-                    </tr>
-                  </thead>
-                  <tbody id="employeeTableBody"></tbody>
-                </table>
+              <!-- Team quests (employee view) -->
+              <div class="sq-card">
+                <h3>Team quests</h3>
+                <p class="sq-muted sq-caption">
+                  Shared goals that everyone contributes toward.
+                </p>
+                <div id="teamQuestsEmployee" class="sq-team-quests"></div>
               </div>
             </div>
 
-            <div class="sq-card">
-              <h3>Team XP Summary</h3>
-              <p class="sq-muted sq-caption">High-level stats for this location.</p>
-              <div class="sq-stat-row sq-mt-sm">
-                <div>
-                  <p class="sq-stat-label">Total team XP</p>
-                  <p id="teamTotalXP" class="sq-stat-value">0</p>
-                </div>
-                <div>
-                  <p class="sq-stat-label">Average level</p>
-                  <p id="teamAvgLevel" class="sq-stat-value">0</p>
-                </div>
-                <div>
-                  <p class="sq-stat-label">Quests completed</p>
-                  <p id="teamTotalQuests" class="sq-stat-value">0</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="sq-card">
-              <h3>Today’s shift summary</h3>
-              <p class="sq-muted sq-caption">
-                Based on quests completed with today's date.
-              </p>
-              <div class="sq-stat-row sq-mt-sm">
-                <div>
-                  <p class="sq-stat-label">Quests today</p>
-                  <p id="teamQuestsToday" class="sq-stat-value">0</p>
-                </div>
-                <div>
-                  <p class="sq-stat-label">XP today</p>
-                  <p id="teamXPToday" class="sq-stat-value">0</p>
-                </div>
-                <div>
-                  <p class="sq-stat-label">Most active</p>
-                  <p id="teamMostActiveToday" class="sq-stat-value">–</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="sq-card">
-              <h3>Top performers</h3>
-              <p class="sq-muted sq-caption">Based on total XP earned.</p>
-              <ul id="topPerformersList" class="sq-top-list"></ul>
-            </div>
-
-            <div class="sq-card">
-              <h3>Data Controls</h3>
-              <p class="sq-muted sq-caption">
-                These controls affect only this browser’s local data. Useful for testing, demos, and starting over.
-              </p>
-              <button id="resetAllDataBtn" class="sq-btn sq-btn-danger sq-btn-sm">Clear all demo data</button>
-            </div>
-          </div>
-
-          <div class="sq-col">
-            <div class="sq-card">
-              <div class="sq-card-header">
-                <h2>Quest Manager</h2>
-                <p class="sq-muted">Create, edit, and remove quests used throughout StaffQuest.</p>
-              </div>
-
-              <form id="questForm" class="sq-form">
-                <input type="hidden" id="questIdInput" />
-
-                <label class="sq-label">
-                  Quest name
-                  <input id="questNameInput" class="sq-input" required />
-                </label>
-
-                <div class="sq-row">
-                  <div class="sq-flex">
-                    <label class="sq-label">
-                      Category
-                      <input id="questCategoryInput" class="sq-input" placeholder="Service, Kitchen, Cleanliness..." />
-                    </label>
-                  </div>
-                  <div class="sq-flex">
-                    <label class="sq-label">
-                      Type
-                      <select id="questTypeInput" class="sq-input">
-                        <option value="core">Core</option>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                      </select>
-                    </label>
-                  </div>
-                  <div class="sq-flex">
-                    <label class="sq-label">
-                      XP
-                      <input id="questXPInput" type="number" min="10" step="10" value="50" class="sq-input" />
-                    </label>
-                  </div>
-                </div>
-
-                <label class="sq-label sq-inline">
-                  <input type="checkbox" id="questRepeatableInput" checked />
-                  Quest is repeatable
-                </label>
-
-                <label class="sq-label">
-                  Description
-                  <textarea id="questDescriptionInput" class="sq-input sq-textarea" rows="3"></textarea>
-                </label>
-
-                <div class="sq-row-right sq-mt-sm sq-gap-sm">
-                  <button type="button" id="questCancelEditBtn" class="sq-btn sq-btn-ghost sq-btn-sm sq-hidden">
-                    Cancel edit
+            <!-- Right Column -->
+            <div class="sq-col">
+              <!-- Available quests -->
+              <div class="sq-card">
+                <div class="sq-card-header-row">
+                  <h2>Available quests</h2>
+                  <button id="randomQuestBtn" class="sq-btn sq-btn-secondary sq-btn-sm">
+                    Random quest
                   </button>
-                  <button type="submit" class="sq-btn sq-btn-primary sq-btn-sm">Save quest</button>
                 </div>
-              </form>
 
-              <div class="sq-divider sq-mt-md sq-mb-sm"></div>
+                <div class="sq-filter-row">
+                  <div class="sq-filter-chips">
+                    <button
+                      class="sq-chip sq-chip-active"
+                      data-filter-type="all"
+                      id="filterTypeAll"
+                    >
+                      All
+                    </button>
+                    <button class="sq-chip" data-filter-type="daily" id="filterTypeDaily">
+                      Daily
+                    </button>
+                    <button class="sq-chip" data-filter-type="weekly" id="filterTypeWeekly">
+                      Weekly
+                    </button>
+                    <button class="sq-chip" data-filter-type="core" id="filterTypeCore">
+                      Core
+                    </button>
+                  </div>
+                  <div>
+                    <select id="filterCategorySelect" class="sq-input sq-input-sm">
+                      <option value="all">All categories</option>
+                    </select>
+                  </div>
+                </div>
 
-              <div id="questManagerList" class="sq-quest-manager-list"></div>
+                <div id="questList" class="sq-quest-list"></div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-    </main>
+        </section>
 
-    <!-- Quest History Modal -->
-    <div id="historyModal" class="sq-modal sq-hidden">
-      <div class="sq-modal-backdrop"></div>
-      <div class="sq-modal-content">
-        <div class="sq-modal-header">
-          <h3>Quest History</h3>
-          <button id="historyModalClose" class="sq-btn sq-btn-ghost sq-btn-xs">Close</button>
+        <!-- Manager Screen -->
+        <section id="managerScreen" class="sq-main sq-main-manager sq-hidden">
+          <div class="sq-grid sq-grid-2">
+            <!-- Left column -->
+            <div class="sq-col">
+              <!-- Team overview -->
+              <div class="sq-card">
+                <div class="sq-card-header-row">
+                  <h2>Team overview</h2>
+                  <button id="addEmployeeBtn" class="sq-btn sq-btn-secondary sq-btn-sm">
+                    + Employee
+                  </button>
+                </div>
+                <div class="sq-table-wrapper">
+                  <table class="sq-table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Level</th>
+                        <th>XP</th>
+                        <th>Quests</th>
+                      </tr>
+                    </thead>
+                    <tbody id="employeeTableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Team XP summary -->
+              <div class="sq-card">
+                <h3>Team XP summary</h3>
+                <div class="sq-kpi-row">
+                  <div class="sq-kpi">
+                    <div class="sq-kpi-label">Total XP</div>
+                    <div id="teamTotalXP" class="sq-kpi-value">0</div>
+                  </div>
+                  <div class="sq-kpi">
+                    <div class="sq-kpi-label">Avg level</div>
+                    <div id="teamAvgLevel" class="sq-kpi-value">0.0</div>
+                  </div>
+                  <div class="sq-kpi">
+                    <div class="sq-kpi-label">Total quests</div>
+                    <div id="teamTotalQuests" class="sq-kpi-value">0</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Today’s shift summary -->
+              <div class="sq-card">
+                <h3>Today’s shift summary</h3>
+                <div class="sq-kpi-row">
+                  <div class="sq-kpi">
+                    <div class="sq-kpi-label">Quests today</div>
+                    <div id="teamQuestsToday" class="sq-kpi-value">0</div>
+                  </div>
+                  <div class="sq-kpi">
+                    <div class="sq-kpi-label">XP today</div>
+                    <div id="teamXPToday" class="sq-kpi-value">0</div>
+                  </div>
+                  <div class="sq-kpi">
+                    <div class="sq-kpi-label">Most active</div>
+                    <div id="teamMostActiveToday" class="sq-kpi-value sq-kpi-small">
+                      –
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Team quests (manager view) -->
+              <div class="sq-card">
+                <h3>Team quests</h3>
+                <p class="sq-muted sq-caption">
+                  Progress toward shared team challenges.
+                </p>
+                <div id="teamQuestsManager" class="sq-team-quests"></div>
+              </div>
+
+              <!-- Top performers -->
+              <div class="sq-card">
+                <h3>Top performers</h3>
+                <ul id="topPerformersList" class="sq-top-list"></ul>
+              </div>
+
+              <!-- Recent activity -->
+              <div class="sq-card">
+                <h3>Recent quest activity</h3>
+                <p class="sq-muted sq-caption">
+                  Last 10 quest completions with verification status.
+                </p>
+                <div id="activityList" class="sq-history-list"></div>
+              </div>
+
+              <!-- Verification queue -->
+              <div class="sq-card">
+                <h3>Verification queue</h3>
+                <p class="sq-muted sq-caption">
+                  Pending quests waiting for manager approval.
+                </p>
+                <div id="verificationQueue" class="sq-quest-manager-list"></div>
+              </div>
+
+              <!-- Data controls -->
+              <div class="sq-card">
+                <h3>Data controls</h3>
+                <p class="sq-muted sq-caption">
+                  These actions only affect this browser. Use them for demo/reset.
+                </p>
+                <div class="sq-row-gap">
+                  <button
+                    id="populateDemoDataBtn"
+                    class="sq-btn sq-btn-secondary sq-btn-sm"
+                  >
+                    Populate sample demo data
+                  </button>
+                  <button id="clearDemoDataBtn" class="sq-btn sq-btn-ghost sq-btn-sm">
+                    Clear all demo data
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right column -->
+            <div class="sq-col">
+              <!-- Quest manager -->
+              <div class="sq-card">
+                <div class="sq-card-header-row">
+                  <h2>Quest manager</h2>
+                  <button id="addQuestBtn" class="sq-btn sq-btn-secondary sq-btn-sm">
+                    + Quest
+                  </button>
+                </div>
+                <div id="questManagerList" class="sq-quest-manager-list"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Toast container -->
+      <div id="toastContainer" class="sq-toast-container"></div>
+
+      <!-- Quest History Modal -->
+      <div id="historyModal" class="sq-modal sq-hidden">
+        <div class="sq-modal-backdrop"></div>
+        <div class="sq-modal-content">
+          <div class="sq-modal-header">
+            <h3>Quest history</h3>
+            <button id="historyCloseBtn" class="sq-btn sq-btn-ghost sq-btn-xs">
+              Close
+            </button>
+          </div>
+          <div class="sq-modal-body">
+            <ul id="historyList" class="sq-history-list"></ul>
+          </div>
         </div>
-        <div id="historyModalBody" class="sq-modal-body"></div>
       </div>
     </div>
 
-    <!-- Help / About Modal -->
-    <div id="helpModal" class="sq-modal sq-hidden">
-      <div class="sq-modal-backdrop"></div>
-      <div class="sq-modal-content">
-        <div class="sq-modal-header">
-          <h3>About StaffQuest</h3>
-          <button id="helpModalClose" class="sq-btn sq-btn-ghost sq-btn-xs">Close</button>
-        </div>
-        <div class="sq-modal-body">
-          <p>
-            <strong>StaffQuest</strong> is a gamified training and motivation prototype for restaurant employees,
-            built for a software engineering project.
-          </p>
-          <p>Key demo tips:</p>
-          <ul>
-            <li>Use the <strong>Employee</strong> tab to show XP, levels, quests, and achievements.</li>
-            <li>Use the <strong>Manager</strong> tab (PIN <code>1234</code>) to show team overview and quest manager.</li>
-            <li>All data is stored locally in this browser only using <code>localStorage</code>.</li>
-            <li>Reset demo data from the Data Controls card in the Manager view.</li>
-          </ul>
-          <p class="sq-muted sq-caption">
-            This version focuses on UX, gamification, and local prototypes. A future version could plug into a real
-            backend for multi-location deployments.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Achievement Toast -->
-    <div id="toast" class="sq-toast sq-hidden">
-      <div class="sq-toast-title" id="toastTitle"></div>
-      <div class="sq-toast-body" id="toastBody"></div>
-    </div>
-  </div>
-
-  <script src="js/data.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/main.js"></script>
-</body>
+    <script src="js/data.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+  </body>
 </html>
