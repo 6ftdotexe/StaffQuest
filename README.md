@@ -1,33 +1,30 @@
-# StaffQuest
+# StaffQuest (Expo + GitHub Pages)
 
-StaffQuest is a gamified training and motivation web app for restaurant employees. It turns everyday tasks into “quests” with XP, levels, streaks, and lightweight manager tools – built as a front-end prototype using HTML, CSS, and JavaScript (no backend).
+Black & yellow gamified restaurant training app. Runs on **Android/iOS (Expo Go)** and also deploys a **web demo to GitHub Pages**.
 
-## Features
+## Run locally (mobile)
+```bash
+npm install
+npx expo start
+```
+Scan QR with **Expo Go**.
 
-- 🎮 **Gamified training for employees**  
-  Employees choose their profile, complete quests (daily, weekly, core), earn XP, level up, and unlock achievements.
+## Run locally (web)
+```bash
+npm install
+npm run web
+```
 
-- 📊 **Live progress, XP, and streaks**  
-  Each employee has a profile with total XP, level, quests completed, **XP earned today**, and **login streak** calculated from quest history.
+## Deploy to GitHub Pages
+This repo includes a GitHub Actions workflow that builds and deploys the web version automatically.
 
-- 😄 **Shift mood check-ins**  
-  Quick emoji-based mood buttons let employees log how their shift felt today (stored per employee in `localStorage`).
+One-time setup:
+1. Push to GitHub
+2. Repo → **Settings → Pages**
+3. **Source: GitHub Actions**
 
-- 🧩 **Quest system with difficulty and filters**  
-  Quests have category, type (daily/weekly/core), XP value, and auto-labeled difficulty (Easy/Normal/Hard), plus filters and a “Random Quest” button.
+Then push to `main` and it will deploy.
 
-- 🧑‍💼 **Manager dashboard with team insights**  
-  Manager view (protected by a demo PIN `1234`) shows a team table, **team XP summary**, **today’s shift summary** (quests & XP today + most active employee), top performers, and a quest editor.
-
-## Tech Stack
-
-- HTML, CSS, Vanilla JavaScript
-- No frameworks, no backend
-- Uses `localStorage` for demo data persistence in the browser
-
-## Getting Started
-
-1. Clone or download the repo.
-2. Open `index.html` directly in your browser **or** run a simple server, for example:
-   ```bash
-   python -m http.server
+## Notes
+- Google Sign-In + Firebase are stubbed to be “ready,” and the app still works offline using AsyncStorage.
+- To fully enable Firebase + Google OAuth, replace `api/firebaseConfig.js` and the OAuth client ID in `screens/LoginScreen.js`.
